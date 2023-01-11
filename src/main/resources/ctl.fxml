@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="549.0" prefWidth="1007.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.danthe1st.convolut0r.controller.ConvolutionController">
+   <children>
+      <Canvas fx:id="inputCanvas" height="200.0" layoutX="53.0" layoutY="48.0" width="200.0" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="50.0" />
+      <Canvas fx:id="outputCanvas" height="200.0" layoutX="352.0" layoutY="48.0" width="200.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0" />
+      <Button layoutX="115.0" layoutY="254.0" mnemonicParsing="false" onAction="#convolute" text="Convolute" />
+      <Text layoutY="5.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Convolut0r" textAlignment="CENTER" wrappingWidth="1007.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0">
+         <font>
+            <Font size="31.0" />
+         </font></Text>
+      <CheckBox fx:id="grayscaleCheckbox" layoutX="228.0" layoutY="258.0" mnemonicParsing="false" text="Grayscale" />
+      <HBox fx:id="conlvolutionInputHolder" layoutX="378.0" layoutY="401.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0">
+         <children>
+            <GridPane fx:id="convolutionInputR" HBox.hgrow="ALWAYS">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <HBox.margin>
+                  <Insets right="25.0" />
+               </HBox.margin>
+            </GridPane>
+            <GridPane fx:id="convolutionInputG" HBox.hgrow="ALWAYS">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <HBox.margin>
+                  <Insets left="25.0" right="25.0" />
+               </HBox.margin>
+            </GridPane>
+            <GridPane fx:id="convolutionInputB" HBox.hgrow="ALWAYS">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <HBox.margin>
+                  <Insets left="25.0" />
+               </HBox.margin>
+            </GridPane>
+         </children>
+      </HBox>
+      <ComboBox fx:id="presetSelector" layoutX="111.0" layoutY="293.0" onAction="#selectPreset" prefWidth="150.0" />
+   </children>
+</AnchorPane>
