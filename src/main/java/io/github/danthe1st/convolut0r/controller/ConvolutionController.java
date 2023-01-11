@@ -21,9 +21,16 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -47,59 +54,148 @@ public class ConvolutionController implements Initializable {
 	@FXML
 	private CheckBox grayscaleCheckbox;
 	@FXML
+	private Spinner<Integer> paddingSpinner;
+	@FXML
+	private Spinner<Integer> stridingSpinner;
+	@FXML
 	private HBox conlvolutionInputHolder;
 	@FXML
 	private ComboBox<Map.Entry<String, Convolution>> presetSelector;
 	
-	private final Map<String, Convolution> PRESETS = Map.of(
-			"horizontal edge detection", new Convolution(
-					new double[][] {
-							{ -1, -2, -1 },
-							{ 0, 0, 0 },
-							{ 1, 2, 1 }
-					}
-			), "vertical edge detection",
-			new Convolution(
-					new double[][] {
-							{ -1, 0, 1 },
-							{ -2, 0, 2 },
-							{ -1, 0, 1 }
-					}
+	private final Map<String, Convolution> PRESETS = Map.ofEntries(
+			Map.entry(
+					"horizontal edge detection", new Convolution(
+							divideArrayBy(
+									new double[][] {
+											{ -1, -2, -1 },
+											{ 0, 0, 0 },
+											{ 1, 2, 1 }
+									}, 9
+							)
+					)
 			),
-			"horizontal filter",
-			new Convolution(
-					new double[][] {
-							{ 1, 1, -1, -1 },
-							{ 1, 1, -1, -1 },
-							{ 1, 1, -1, -1 },
-							{ 1, 1, -1, -1 }
-					}
+			Map.entry(
+					"vertical edge detection",
+					new Convolution(
+							divideArrayBy(
+									new double[][] {
+											{ -1, 0, 1 },
+											{ -2, 0, 2 },
+											{ -1, 0, 1 }
+									}, 9
+							)
+					)
 			),
-			"vertical filter",
-			new Convolution(
-					new double[][] {
-							{ 1, 1, 1, 1 },
-							{ 1, 1, 1, 1 },
-							{ -1, -1, -1, -1 },
-							{ -1, -1, -1, -1 }
-					}
-			), "only red",
-			new Convolution(
-					new double[][][] {
-							{ { 1 } }, { { 0 } }, { { 0 } }
-					}
-			), "only green",
-			new Convolution(
-					new double[][][] {
-							{ { 0 } }, { { 1 } }, { { 0 } }
-					}
-			), "only blue",
-			new Convolution(
-					new double[][][] {
-							{ { 0 } }, { { 0 } }, { { 1 } }
-					}
+			Map.entry(
+					"horizontal filter",
+					new Convolution(
+							divideArrayBy(
+									new double[][] {
+											{ 1, 1, -1, -1 },
+											{ 1, 1, -1, -1 },
+											{ 1, 1, -1, -1 },
+											{ 1, 1, -1, -1 }
+									}, 9
+							)
+					)
+			),
+			Map.entry(
+					"vertical filter",
+					new Convolution(
+							divideArrayBy(
+									new double[][] {
+											{ 1, 1, 1, 1 },
+											{ 1, 1, 1, 1 },
+											{ -1, -1, -1, -1 },
+											{ -1, -1, -1, -1 }
+									}, 9
+							)
+					)
+			),
+			Map.entry(
+					"Prewitt vertical",
+					new Convolution(
+							divideArrayBy(
+									new double[][] {
+											{ 1, 0, -1 },
+											{ 1, 0, -1 },
+											{ 1, 0, -1 }
+									}, 9
+							)
+					)
+			),
+			Map.entry(
+					"Prewitt horizontal",
+					new Convolution(
+							divideArrayBy(
+									new double[][] {
+											{ 1, 1, 1 },
+											{ 0, 0, 0 },
+											{ -1, -1, -1 }
+									}, 9
+							)
+					)
+			),
+			Map.entry(
+					"Gaussian Blur",
+					new Convolution(
+							getGaussianBlurMatrix()
+					)
+			),
+			Map.entry(
+					"only red",
+					new Convolution(
+							new double[][][] {
+									{ { 1 } }, { { 0 } }, { { 0 } }
+							}
+					)
+			),
+			Map.entry(
+					"only green",
+					new Convolution(
+							new double[][][] {
+									{ { 0 } }, { { 1 } }, { { 0 } }
+							}
+					)
+			),
+			Map.entry(
+					"only blue",
+					new Convolution(
+							new double[][][] {
+									{ { 0 } }, { { 0 } }, { { 1 } }
+							}
+					)
+			),
+			Map.entry(
+					"no change",
+					new Convolution(
+							new double[][][] {
+									{ { 1 } }, { { 1 } }, { { 1 } }
+							}
+					)
 			)
 	);
+	
+	private double[][][] getGaussianBlurMatrix() {
+		double[][] singleDimension = { { 1, 4, 6, 4, 1 },
+				{ 4, 16, 24, 14, 4 },
+				{ 6, 24, 36, 24, 6 },
+				{ 4, 16, 24, 14, 4 },
+				{ 1, 4, 6, 4, 1 } };
+		divideArrayBy(singleDimension, 256.0);
+		return new double[][][] {
+				singleDimension, singleDimension, singleDimension
+		};
+	}
+	
+	private double[][] divideArrayBy(double[][] arr, double divisor) {
+		for(int i = 0; i < arr.length; i++){
+			for(int j = 0; j < arr[i].length; j++){
+				arr[i][j] = arr[i][j] / divisor;
+			}
+		}
+		return arr;
+	}
 	
 	@SuppressWarnings("unchecked")
 	private Spinner<Double>[][][] inputSpinners = (Spinner<Double>[][][]) new Spinner<?>[3][3][3];
@@ -111,7 +207,6 @@ public class ConvolutionController implements Initializable {
 	
 	@FXML
 	void convolute(ActionEvent event) {
-		
 		int pixelWidth = (int) inputImage.getWidth();
 		int pixelHeight = (int) inputImage.getHeight();
 		boolean grayscale = grayscaleCheckbox.isSelected();
@@ -126,6 +221,7 @@ public class ConvolutionController implements Initializable {
 						int r = ((argb >> 16) & 0xFF);
 						int g = (argb >> 8) & 0xFF;
 						int b = argb & 0xFF;
+//						pixels[0][i][j] = (int)((r+g+b)/3);
 						pixels[0][i][j] = (int) (0.299 * r + 0.587 * g + 0.114 * b);// https://stackoverflow.com/a/15056209/10871900
 					}else{
 						for(int c = 0; c < channelCount; c++){
@@ -136,7 +232,7 @@ public class ConvolutionController implements Initializable {
 				}
 			}
 			pixels = convolution.convolute(pixels);
-			WritableImage outputImage = new WritableImage(pixelWidth, pixelHeight);
+			WritableImage outputImage = new WritableImage(pixels[0].length, pixels[0][0].length);
 			for(int i = 0; i < pixels[0].length; i++){
 				for(int j = 0; j < pixels[0][i].length; j++){
 					int argb = 0;
@@ -165,8 +261,13 @@ public class ConvolutionController implements Initializable {
 		saveConvolutionToUI(presetSelector.getSelectionModel().getSelectedItem().getValue());
 	}
 	
+	@FXML
+	void selectImage(ActionEvent event) {
+		selectImage();
+	}
+	
 	private Convolution loadConvolutionFromUI(boolean grayscale) {
-		return new Convolution(getConvolutionArray(grayscale), 1, 0);
+		return new Convolution(getConvolutionArray(grayscale), stridingSpinner.getValue(), paddingSpinner.getValue());
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -179,12 +280,18 @@ public class ConvolutionController implements Initializable {
 		inputSpinners = (Spinner<Double>[][][]) new Spinner<?>[3][conv[0].length][conv[0].length];
 		for(int k = 0; k < 3; k++){
 			convolutionInputPanes[k].getChildren().clear();
+			convolutionInputPanes[k].getColumnConstraints().clear();
 			for(int i = 0; i < conv[0].length; i++){
 				for(int j = 0; j < conv[0][i].length; j++){
-					createConvolutionSpinner(j, i, inputSpinners[k], convolutionInputPanes[k], k < conv.length ? ((int) conv[k][i][j]) : 0);
+					createConvolutionSpinner(i, j, inputSpinners[k], convolutionInputPanes[k], k < conv.length ? (conv[k][j][i]) : 0);
 				}
+				ColumnConstraints cc = new ColumnConstraints();
+				cc.setPercentWidth(100.0 / conv[0].length);
+				convolutionInputPanes[k].getColumnConstraints().add(cc);
 			}
 		}
+		stridingSpinner.getValueFactory().setValue(convolution.striding());
+		stridingSpinner.getValueFactory().setValue(convolution.padding());
 	}
 	
 	private double[][][] getConvolutionArray(boolean grayscale) {
@@ -204,6 +311,19 @@ public class ConvolutionController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		convolutionInputPanes = new GridPane[] { convolutionInputR, convolutionInputG, convolutionInputB };
+		for(GridPane gridPane : convolutionInputPanes){
+			gridPane.setBorder(
+					new Border(
+							new BorderStroke(
+									Color.BLACK,
+									BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT
+							)
+					)
+			);
+			gridPane.setGridLinesVisible(true);
+		}
+		paddingSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 0));
+		stridingSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1));
 		saveConvolutionToUI(
 				new Convolution(
 						new double[][][] {
@@ -237,7 +357,7 @@ public class ConvolutionController implements Initializable {
 		presetSelector.getItems().addAll(PRESETS.entrySet());
 	}
 	
-	private void createConvolutionSpinner(int i, int j, Spinner<Double>[][] spinnerStorage, GridPane position, int defaultValue) {
+	private void createConvolutionSpinner(int i, int j, Spinner<Double>[][] spinnerStorage, GridPane position, double defaultValue) {
 		Spinner<Double> spinner = new Spinner<>(-255, 255, defaultValue);
 		spinner.setEditable(true);
 		spinner.setValueFactory(new DoubleSpinnerValueFactory(-10, 10, defaultValue));

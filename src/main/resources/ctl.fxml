@@ -5,6 +5,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -17,13 +19,13 @@
    <children>
       <Canvas fx:id="inputCanvas" height="200.0" layoutX="53.0" layoutY="48.0" width="200.0" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="50.0" />
       <Canvas fx:id="outputCanvas" height="200.0" layoutX="352.0" layoutY="48.0" width="200.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0" />
-      <Button layoutX="115.0" layoutY="254.0" mnemonicParsing="false" onAction="#convolute" text="Convolute" />
+      <Button defaultButton="true" layoutX="468.0" layoutY="281.0" mnemonicParsing="false" onAction="#convolute" text="Convolute" />
       <Text layoutY="5.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Convolut0r" textAlignment="CENTER" wrappingWidth="1007.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0">
          <font>
             <Font size="31.0" />
          </font></Text>
-      <CheckBox fx:id="grayscaleCheckbox" layoutX="228.0" layoutY="258.0" mnemonicParsing="false" text="Grayscale" />
-      <HBox fx:id="conlvolutionInputHolder" layoutX="378.0" layoutY="401.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0">
+      <CheckBox fx:id="grayscaleCheckbox" layoutX="286.0" layoutY="297.0" mnemonicParsing="false" text="Grayscale" />
+      <HBox fx:id="conlvolutionInputHolder" layoutX="378.0" layoutY="401.0" prefWidth="200.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0">
          <children>
             <GridPane fx:id="convolutionInputR" HBox.hgrow="ALWAYS">
               <columnConstraints>
@@ -70,5 +72,11 @@
          </children>
       </HBox>
       <ComboBox fx:id="presetSelector" layoutX="111.0" layoutY="293.0" onAction="#selectPreset" prefWidth="150.0" />
+      <Button layoutX="345.0" layoutY="138.0" mnemonicParsing="false" onAction="#selectImage" text="Select image" />
+      <Spinner fx:id="stridingSpinner" editable="true" layoutX="111.0" layoutY="254.0" prefHeight="25.0" prefWidth="75.0" />
+      <Spinner fx:id="paddingSpinner" editable="true" layoutX="261.0" layoutY="254.0" prefHeight="25.0" prefWidth="75.0" />
+      <Label layoutX="44.0" layoutY="297.0" text="Presets" />
+      <Label layoutX="50.0" layoutY="258.0" text="Striding" />
+      <Label layoutX="200.0" layoutY="258.0" text="Padding" />
    </children>
 </AnchorPane>
