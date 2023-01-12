@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,6 +20,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
@@ -37,9 +39,29 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 public class ConvolutionController implements Initializable {
 	
+	private static final Convolution IDENTITY_CONVOLUTION = new Convolution(
+			new double[][][] {
+					{
+							{ 0, 0, 0 },
+							{ 0, 1, 0 },
+							{ 0, 0, 0 }
+					},
+					{
+							{ 0, 0, 0 },
+							{ 0, 1, 0 },
+							{ 0, 0, 0 }
+					},
+					{
+							{ 0, 0, 0 },
+							{ 0, 1, 0 },
+							{ 0, 0, 0 }
+					}
+			}, 1, 0
+	);
 	@FXML
 	private GridPane convolutionInputR;
 	@FXML
@@ -166,11 +188,64 @@ public class ConvolutionController implements Initializable {
 							}
 					)
 			),
+			// https://en.wikipedia.org/wiki/Kernel_(image_processing)
 			Map.entry(
-					"no change",
-					new Convolution(
+					"identity (3x3)", IDENTITY_CONVOLUTION
+			),
+//			Map.entry(
+//					"generic edge detection", new Convolution(
+//							new double[][] {
+//									{ 0, -1, 0 },
+//									{ -1, 4, -1 },
+//									{ 0, -1, 0 }
+//							}
+//					)
+//			),
+			Map.entry(
+					"simple blur", new Convolution(
 							new double[][][] {
-									{ { 1 } }, { { 1 } }, { { 1 } }
+									divideArrayBy(
+											new double[][] {
+													{ 1, 1, 1 },
+													{ 1, 1, 1 },
+													{ 1, 1, 1 }
+											}, 9
+									),
+									divideArrayBy(
+											new double[][] {
+													{ 1, 1, 1 },
+													{ 1, 1, 1 },
+													{ 1, 1, 1 }
+											}, 9
+									),
+									divideArrayBy(
+											new double[][] {
+													{ 1, 1, 1 },
+													{ 1, 1, 1 },
+													{ 1, 1, 1 }
+											}, 9
+									)
+							}
+					)
+			),
+			Map.entry(
+					"sharpen", new Convolution(
+							new double[][][] {
+									{
+											{ 0, -1, 0 },
+											{ -1, 5, 0 },
+											{ 0, -1, 0 }
+									},
+									{
+											{ 0, -1, 0 },
+											{ -1, 5, 0 },
+											{ 0, -1, 0 }
+									},
+									{
+											{ 0, -1, 0 },
+											{ -1, 5, 0 },
+											{ 0, -1, 0 }
+									}
 							}
 					)
 			)
@@ -324,34 +399,46 @@ public class ConvolutionController implements Initializable {
 		}
 		paddingSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 0));
 		stridingSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1));
-		saveConvolutionToUI(
-				new Convolution(
-						new double[][][] {
-								{
-										{ -1, -2, -1 },
-										{ 0, 0, 0 },
-										{ 1, 2, 1 }
-								}
-						}, 1, 0
-				)
-		);
+		saveConvolutionToUI(IDENTITY_CONVOLUTION);
 		GraphicsContext gc = inputCanvas.getGraphicsContext2D();
-		gc.setFill(Color.BLUE);
+		gc.setFill(Color.WHITE);
 		gc.fillRect(0, 0, inputCanvas.getWidth(), inputCanvas.getHeight());
+		gc.setFill(Color.BLACK);
+		gc.setStroke(Color.BLACK);
+		gc.fillOval(inputCanvas.getWidth() / 5, inputCanvas.getHeight() / 5, inputCanvas.getWidth() / 10, inputCanvas.getHeight() / 10);
+		gc.fillOval(inputCanvas.getWidth() - inputCanvas.getWidth() / 3, inputCanvas.getHeight() / 5, inputCanvas.getWidth() / 10, inputCanvas.getHeight() / 10);
+		gc.strokeOval(inputCanvas.getWidth() / 5, inputCanvas.getHeight() / 2, 3 * inputCanvas.getWidth() / 5, inputCanvas.getHeight() / 3);
+		gc.setFill(Color.WHITE);
+		gc.fillRect(0, inputCanvas.getHeight() / 2 - 1, inputCanvas.getWidth(), inputCanvas.getHeight() / 4);
 		inputImage = inputCanvas.snapshot(null, null);
-		grayscaleCheckbox.setSelected(true);
 		convolutionInputG.visibleProperty().bind(grayscaleCheckbox.selectedProperty().not());
 		convolutionInputB.visibleProperty().bind(grayscaleCheckbox.selectedProperty().not());
 		
 		presetSelector.setCellFactory(param -> new ListCell<>() {
+			{
+				setContentDisplay(ContentDisplay.TEXT_ONLY);
+			}
+			
 			@Override
 			public void updateItem(Map.Entry<String, Convolution> item, boolean empty) {
 				super.updateItem(item, empty);
 				if(item == null){
-					setText("");
+					setText(null);
 				}else{
 					setText(item.getKey());
 				}
+			}
+		});
+		presetSelector.setConverter(new StringConverter<Map.Entry<String, Convolution>>() {
+			
+			@Override
+			public String toString(Entry<String, Convolution> e) {
+				return e == null ? null : e.getKey();
+			}
+			
+			@Override
+			public Entry<String, Convolution> fromString(String key) {
+				return Map.entry(key, PRESETS.get(key));
 			}
 		});
 		presetSelector.getItems().addAll(PRESETS.entrySet());

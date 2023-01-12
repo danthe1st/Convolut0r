@@ -4,7 +4,7 @@ import io.github.danthe1st.convolut0r.controller.ConvolutionController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class Convolut0r extends Application {
@@ -16,7 +16,7 @@ public class Convolut0r extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		FXMLLoader loader = new FXMLLoader(Thread.currentThread().getContextClassLoader().getResource("ctl.fxml"));
-		AnchorPane root = loader.load();
+		Pane root = loader.load();
 		ConvolutionController controller = loader.getController();
 		controller.setStage(primaryStage);
 		primaryStage.setScene(new Scene(root));
