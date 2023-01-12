@@ -60,7 +60,7 @@ public class ConvolutionController implements Initializable {
 							{ 0, 1, 0 },
 							{ 0, 0, 0 }
 					}
-			}, 1, 0
+			}, 1, 1
 	);
 	@FXML
 	private GridPane convolutionInputR;
@@ -366,7 +366,7 @@ public class ConvolutionController implements Initializable {
 			}
 		}
 		stridingSpinner.getValueFactory().setValue(convolution.striding());
-		stridingSpinner.getValueFactory().setValue(convolution.padding());
+		paddingSpinner.getValueFactory().setValue(convolution.padding());
 	}
 	
 	private double[][][] getConvolutionArray(boolean grayscale) {
