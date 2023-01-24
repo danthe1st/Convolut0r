@@ -23,3 +23,7 @@ Using a higher value than `1` for striding significantly decreases the resolutio
 
 ### Padding
 Without a padding, the output image would have a lower resolution than the input image (see the exemplary image for before). It is possible to add some padding to the input image in order to increase the number of pixels in the output image.
+
+# Building the project
+
+Once [Maven](https://maven.apache.org/) is installed, the project can be built and run using the command `mvn javafx:run`.

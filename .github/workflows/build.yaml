@@ -1,0 +1,32 @@
+name: Build
+on: [push]
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+        - buildPlatform: win
+          os: windows-latest
+        - buildPlatform: linux
+          os: ubuntu-latest
+        - buildPlatform: mac
+          os: macOS-latest
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 14
+      uses: actions/setup-java@v2
+      with:
+        java-version: '14'
+        distribution: 'adopt'
+    - name: Build with Maven
+      run: mvn -B package jpackage:jpackage
+    - name: Upload installer
+      uses: actions/upload-artifact@v2.2.3
+      with:
+        name: YAGPL
+        path: target/jpackage/*
+    - name: show directory structure if failed
+      run: find target
+      if: ${{ failure() }}
